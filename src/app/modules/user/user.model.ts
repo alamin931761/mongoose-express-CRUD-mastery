@@ -1,8 +1,15 @@
 import { Schema, model } from 'mongoose';
-import { Address, FullName, Order, User } from './user.interface';
+import {
+  TAddress,
+  TFullName,
+  TOrder,
+  TUser,
+  UserMethods,
+  UserModel,
+} from './user.interface';
 
 // schema
-const fullNameSchema = new Schema<FullName>({
+const fullNameSchema = new Schema<TFullName>({
   firstName: {
     type: String,
     required: true,
@@ -15,7 +22,7 @@ const fullNameSchema = new Schema<FullName>({
   },
 });
 
-const addressSchema = new Schema<Address>({
+const addressSchema = new Schema<TAddress>({
   street: {
     type: String,
     required: true,
@@ -33,7 +40,7 @@ const addressSchema = new Schema<Address>({
   },
 });
 
-const OrderSchema = new Schema<Order>({
+const OrderSchema = new Schema<TOrder>({
   productName: {
     type: String,
     required: true,
@@ -49,7 +56,7 @@ const OrderSchema = new Schema<Order>({
   },
 });
 
-const userSchema = new Schema<User>({
+const userSchema = new Schema<TUser, UserModel>({
   userId: {
     type: Number,
     unique: true,
@@ -90,4 +97,9 @@ const userSchema = new Schema<User>({
   },
 });
 
-export const UserModel = model<User>('user', userSchema);
+userSchema.statics.isUserExist = async function (userId: number) {
+  const existingUser = await User.findOne({ userId });
+  return existingUser;
+};
+
+export const User = model<TUser, UserModel>('user', userSchema);
