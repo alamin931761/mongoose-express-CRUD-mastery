@@ -22,7 +22,7 @@ const getAllUsersFromDB = async () => {
 
 // get single user
 const getSingleUserFromDB = async (userId: number) => {
-  const result = await User.findOne({ userId });
+  const result = await User.findOne({ userId }).select({ password: 0 });
 
   if ((await User.isUserExist(userId)) === null) {
     throw new Error('userNotFound');
@@ -30,8 +30,18 @@ const getSingleUserFromDB = async (userId: number) => {
   return result;
 };
 
+// delete a user
+const deleteUserFromDB = async (userId: number) => {
+  if ((await User.isUserExist(userId)) === null) {
+    throw new Error('userNotFound');
+  }
+  const result = await User.deleteOne({ userId });
+  return result;
+};
+
 export const userServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
+  deleteUserFromDB,
 };

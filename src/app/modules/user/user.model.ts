@@ -4,9 +4,10 @@ import {
   TFullName,
   TOrder,
   TUser,
-  UserMethods,
   UserModel,
 } from './user.interface';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 // schema
 const fullNameSchema = new Schema<TFullName>({
@@ -97,9 +98,28 @@ const userSchema = new Schema<TUser, UserModel>({
   },
 });
 
+// pre save middleware
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
+
+// post save middleware
+userSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
+// custom static method
 userSchema.statics.isUserExist = async function (userId: number) {
   const existingUser = await User.findOne({ userId });
   return existingUser;
 };
 
+// model
 export const User = model<TUser, UserModel>('user', userSchema);
