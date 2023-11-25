@@ -192,6 +192,77 @@ const addNewProduct = async (req: Request, res: Response) => {
   }
 };
 
+// Retrieve all orders for a specific user
+const allOrderForASpecificUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await userServices.getAllOrdersForASpecificUserFromDB(
+      parseInt(userId),
+    );
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: result,
+    });
+  } catch (error: any) {
+    if (error.message === 'userNotFound') {
+      res.status(500).json({
+        success: false,
+        message: {
+          success: false,
+          message: 'User not found',
+          error: {
+            code: 404,
+            description: 'User not found!',
+          },
+        },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'something went wrong',
+        error,
+      });
+    }
+  }
+};
+
+// Calculate Total Price of Orders for a Specific User
+const calculateTotalPrice = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await userServices.calculateTotalPriceFromDB(
+      parseInt(userId),
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Total price calculated successfully!',
+      data: result,
+    });
+  } catch (error: any) {
+    if (error.message === 'userNotFound') {
+      res.status(500).json({
+        success: false,
+        message: {
+          success: false,
+          message: 'User not found',
+          error: {
+            code: 404,
+            description: 'User not found!',
+          },
+        },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'something went wrong',
+        error,
+      });
+    }
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
@@ -199,4 +270,6 @@ export const UserControllers = {
   deleteUser,
   updateUserInformation,
   addNewProduct,
+  allOrderForASpecificUser,
+  calculateTotalPrice,
 };

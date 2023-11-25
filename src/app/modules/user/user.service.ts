@@ -61,6 +61,50 @@ const addNewProductInOrder = async (order: TOrder, userId: number) => {
   return result;
 };
 
+// Retrieve all orders for a specific user
+const getAllOrdersForASpecificUserFromDB = async (userId: number) => {
+  if ((await User.isUserExist(userId)) === null) {
+    throw new Error('userNotFound');
+  }
+
+  const result = await User.findOne({ userId }).select({ orders: 1 });
+  return result;
+};
+
+// Calculate Total Price of Orders for a Specific User
+const calculateTotalPriceFromDB = async (userId: number) => {
+  if ((await User.isUserExist(userId)) === null) {
+    throw new Error('userNotFound');
+  }
+
+  const result = await User.aggregate([
+    // stage-1
+    { $match: { userId } },
+
+    // stage-2
+    { $unwind: '$orders' },
+
+    // stage-3
+    {
+      $group: {
+        _id: null,
+        totalPrice: {
+          $sum: { $multiply: ['$orders.price', '$orders.quantity'] },
+        },
+      },
+    },
+
+    // stage-4
+    {
+      $project: {
+        _id: 0,
+        totalPrice: { $round: ['$totalPrice', 2] },
+      },
+    },
+  ]);
+  return result;
+};
+
 export const userServices = {
   createUserIntoDB,
   getAllUsersFromDB,
@@ -68,4 +112,6 @@ export const userServices = {
   deleteUserFromDB,
   updateUserInformationFromDB,
   addNewProductInOrder,
+  getAllOrdersForASpecificUserFromDB,
+  calculateTotalPriceFromDB,
 };

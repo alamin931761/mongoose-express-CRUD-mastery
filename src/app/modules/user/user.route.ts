@@ -19,4 +19,10 @@ router.put('/:userId', UserControllers.updateUserInformation);
 // add New Product in Order
 router.put('/:userId/orders', UserControllers.addNewProduct);
 
+// Retrieve all orders for a specific user
+router.get('/:userId/orders', UserControllers.allOrderForASpecificUser);
+
+// Calculate Total Price of Orders for a Specific User
+router.get('/:userId/orders/total-price', UserControllers.calculateTotalPrice);
+
 export const UserRoutes = router;
