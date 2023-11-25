@@ -1,13 +1,13 @@
 import express from 'express';
 import { UserControllers } from './user.controller';
 const router = express.Router();
-// create user
+// Create a new user
 router.post('/', UserControllers.createUser);
 
-// get all users
+// Retrieve a list of all users
 router.get('/', UserControllers.getAllUsers);
 
-// get single user
+// Retrieve a specific user by ID
 router.get('/:userId', UserControllers.getSingleUser);
 
 // delete a user

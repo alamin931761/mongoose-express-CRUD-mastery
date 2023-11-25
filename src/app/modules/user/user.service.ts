@@ -1,13 +1,13 @@
 import { TOrder, TUser } from './user.interface';
 import { User } from './user.model';
 
-// create user
+// Create a new user
 const createUserIntoDB = async (user: TUser) => {
   const result = await User.create(user);
   return result;
 };
 
-// get all users
+// Retrieve a list of all users
 const getAllUsersFromDB = async () => {
   const result = await User.find().select({
     _id: 0,
@@ -20,7 +20,7 @@ const getAllUsersFromDB = async () => {
   return result;
 };
 
-// get single user
+// Retrieve a specific user by ID
 const getSingleUserFromDB = async (userId: number) => {
   const result = await User.findOne({ userId }).select({ password: 0 });
 
