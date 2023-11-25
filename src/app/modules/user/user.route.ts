@@ -13,6 +13,10 @@ router.get('/:userId', UserControllers.getSingleUser);
 // delete a user
 router.delete('/:userId', UserControllers.deleteUser);
 
-router.patch('/:userId', UserControllers.updateUserInformation);
+// update user information
+router.put('/:userId', UserControllers.updateUserInformation);
+
+// add New Product in Order
+router.put('/:userId/orders', UserControllers.addNewProduct);
 
 export const UserRoutes = router;

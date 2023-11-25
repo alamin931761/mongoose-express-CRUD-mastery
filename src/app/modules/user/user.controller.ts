@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import userValidationSchema from './user.validation';
 import { userServices } from './user.service';
+import { TOrder } from './user.interface';
 
 // create user
 const createUser = async (req: Request, res: Response) => {
@@ -153,10 +154,49 @@ const updateUserInformation = async (req: Request, res: Response) => {
   }
 };
 
+// Add New Product in Order
+const addNewProduct = async (req: Request, res: Response) => {
+  try {
+    const order: TOrder = req.body.order;
+    const { userId } = req.params;
+
+    const result = await userServices.addNewProductInOrder(
+      order,
+      parseInt(userId),
+    );
+    res.status(200).json({
+      success: true,
+      message: 'Order created successfully!',
+      data: null,
+    });
+  } catch (error: any) {
+    if (error.message === 'userNotFound') {
+      res.status(500).json({
+        success: false,
+        message: {
+          success: false,
+          message: 'User not found',
+          error: {
+            code: 404,
+            description: 'User not found!',
+          },
+        },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'something went wrong',
+        error,
+      });
+    }
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
   deleteUser,
   updateUserInformation,
+  addNewProduct,
 };

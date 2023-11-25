@@ -13,47 +13,54 @@ import config from '../../config';
 const fullNameSchema = new Schema<TFullName>({
   firstName: {
     type: String,
-    required: true,
+    required: [true, 'First name is required.'],
     trim: true,
+    minLength: [2, 'First name should be at least 2 characters.'],
+    maxLength: [15, 'First name should not exceed 15 characters.'],
   },
   lastName: {
     type: String,
-    required: true,
+    required: [true, 'Last name is required.'],
     trim: true,
+    minLength: [2, 'Last name should be at least 2 characters.'],
+    maxLength: [15, 'Last name should not exceed 15 characters.'],
   },
 });
 
 const addressSchema = new Schema<TAddress>({
   street: {
     type: String,
-    required: true,
+    required: [true, 'Street is a required field.'],
     trim: true,
+    minLength: [2, 'Street must be at least 2 characters long.'],
   },
   city: {
     type: String,
-    required: true,
+    required: [true, 'City is a required field.'],
     trim: true,
+    minLength: [2, 'City must be at least 2 characters long.'],
   },
   country: {
     type: String,
-    required: true,
+    required: [true, 'Country is a required field.'],
     trim: true,
+    minLength: [2, 'Country must be at least 2 characters long.'],
   },
 });
 
 const OrderSchema = new Schema<TOrder>({
   productName: {
     type: String,
-    required: true,
+    required: [true, 'Product name is required.'],
     trim: true,
   },
   price: {
     type: Number,
-    required: true,
+    required: [true, 'Price is required.'],
   },
   quantity: {
     type: Number,
-    required: true,
+    required: [true, 'Quantity is required.'],
   },
 });
 
@@ -61,40 +68,48 @@ const userSchema = new Schema<TUser, UserModel>({
   userId: {
     type: Number,
     unique: true,
+    required: [true, 'User ID is required.'],
   },
   username: {
     type: String,
     unique: true,
+    required: [true, 'Username is required.'],
+    maxLength: [20, 'Username must be at most 20 characters long.'],
   },
   password: {
     type: String,
+    required: [true, 'Password is required.'],
+    minlength: [8, 'Password must be at least 8 characters long.'],
+    maxLength: [30, 'Password must be at most 30 characters long.'],
   },
   fullName: {
     type: fullNameSchema,
-    trim: true,
-    required: true,
+    required: [true, 'Full name is required.'],
   },
   age: {
     type: Number,
+    required: [true, 'Age is required.'],
   },
   email: {
     type: String,
+    required: [true, 'Email is required.'],
   },
   isActive: {
     type: Boolean,
     default: true,
+    required: [true, 'IsActive is required.'],
   },
   hobbies: {
     type: [String],
-    required: true,
+    required: [true, 'Hobbies are required.'],
+    minLength: [2, 'At least 2 hobbies are required.'],
   },
   address: {
     type: addressSchema,
-    required: true,
+    required: [true, 'Address is required.'],
   },
   orders: {
     type: [OrderSchema],
-    required: true,
   },
 });
 
