@@ -22,11 +22,27 @@ const getAllUsersFromDB = async () => {
 
 // Retrieve a specific user by ID
 const getSingleUserFromDB = async (userId: number) => {
-  const result = await User.findOne({ userId }).select({ password: 0 });
+  const result = await User.findOne({ userId }).select({
+    password: 0,
+    _id: 0,
+    orders: 0,
+  });
 
   if ((await User.isUserExist(userId)) === null) {
     throw new Error('userNotFound');
   }
+  return result;
+};
+
+// Update user information
+const updateUserInformationFromDB = async (
+  user: Partial<TUser>,
+  userId: number,
+) => {
+  if ((await User.isUserExist(userId)) === null) {
+    throw new Error('userNotFound');
+  }
+  const result = await User.updateOne({ userId }, user);
   return result;
 };
 
@@ -36,15 +52,6 @@ const deleteUserFromDB = async (userId: number) => {
     throw new Error('userNotFound');
   }
   const result = await User.deleteOne({ userId });
-  return result;
-};
-
-// Update user information
-const updateUserInformationFromDB = async (user: TUser, userId: number) => {
-  if ((await User.isUserExist(userId)) === null) {
-    throw new Error('userNotFound');
-  }
-  const result = await User.updateOne({ userId }, user);
   return result;
 };
 
@@ -67,7 +74,7 @@ const getAllOrdersForASpecificUserFromDB = async (userId: number) => {
     throw new Error('userNotFound');
   }
 
-  const result = await User.findOne({ userId }).select({ orders: 1 });
+  const result = await User.findOne({ userId }).select({ orders: 1, _id: 0 });
   return result;
 };
 
@@ -102,7 +109,7 @@ const calculateTotalPriceFromDB = async (userId: number) => {
       },
     },
   ]);
-  return result;
+  return result[0];
 };
 
 export const userServices = {

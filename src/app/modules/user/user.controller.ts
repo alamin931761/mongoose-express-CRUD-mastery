@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import userValidationSchema from './user.validation';
 import { userServices } from './user.service';
 import { TOrder } from './user.interface';
+import { ValidationSchema } from './user.validation';
 
 // create user
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { user } = req.body;
-
     // data validation using zod
-    const zodParserData = await userValidationSchema.parse(user);
+    const zodParserData = await ValidationSchema.userValidationSchema.parse(
+      req.body,
+    );
     const result = await userServices.createUserIntoDB(zodParserData);
 
     res.status(200).json({
@@ -32,7 +32,7 @@ const getAllUsers = async (req: Request, res: Response) => {
     const result = await userServices.getAllUsersFromDB();
     res.status(200).json({
       success: true,
-      message: 'Users data retrieved successfully',
+      message: 'Users fetched successfully!',
       data: result,
     });
   } catch (error) {
@@ -52,7 +52,50 @@ const getSingleUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: 'user is retrieved successfully',
+      message: 'User fetched successfully!',
+      data: result,
+    });
+  } catch (error: any) {
+    if (error.message === 'userNotFound') {
+      res.status(500).json({
+        success: false,
+        message: {
+          success: false,
+          message: 'User not found',
+          error: {
+            code: 404,
+            description: 'User not found!',
+          },
+        },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'something went wrong',
+        error,
+      });
+    }
+  }
+};
+
+// Update user information
+const updateUserInformation = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    // data validation using zod
+    const zodParserData =
+      await ValidationSchema.UpdateUserInformationValidationSchema.parse(
+        req.body,
+      );
+    const result = await userServices.updateUserInformationFromDB(
+      zodParserData,
+      parseInt(userId),
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully!',
       data: result,
     });
   } catch (error: any) {
@@ -87,48 +130,7 @@ const deleteUser = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: 'User deleted successfully',
-      data: result,
-    });
-  } catch (error: any) {
-    if (error.message === 'userNotFound') {
-      res.status(500).json({
-        success: false,
-        message: {
-          success: false,
-          message: 'User not found',
-          error: {
-            code: 404,
-            description: 'User not found!',
-          },
-        },
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: 'something went wrong',
-        error,
-      });
-    }
-  }
-};
-
-// Update user information
-const updateUserInformation = async (req: Request, res: Response) => {
-  try {
-    const { user } = req.body;
-    const { userId } = req.params;
-
-    // data validation using zod
-    const zodParserData = await userValidationSchema.parse(user);
-    const result = await userServices.updateUserInformationFromDB(
-      zodParserData,
-      parseInt(userId),
-    );
-
-    res.status(200).json({
-      success: true,
-      message: 'User information updated successfully',
-      data: result,
+      data: null,
     });
   } catch (error: any) {
     if (error.message === 'userNotFound') {
@@ -156,13 +158,16 @@ const updateUserInformation = async (req: Request, res: Response) => {
 // Add New Product in Order
 const addNewProduct = async (req: Request, res: Response) => {
   try {
-    const order: TOrder = req.body.order;
     const { userId } = req.params;
 
+    const zodParserData =
+      await ValidationSchema.addNewProductValidationSchema.parse(req.body);
+
     const result = await userServices.addNewProductInOrder(
-      order,
+      zodParserData,
       parseInt(userId),
     );
+
     res.status(200).json({
       success: true,
       message: 'Order created successfully!',
